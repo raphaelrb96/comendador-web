@@ -41,7 +41,7 @@ const Capa = ({post}) => {
                     <Typography variant="h5" color="inherit" paragraph>
                     {post.description}
                     </Typography>
-                    <Link variant="subtitle1" style={{fontWeight: 'bold', fontSize: 25}} color={colorPrimary} underline="none" href="#">
+                    <Link variant="subtitle1" style={{fontWeight: 'bold', fontSize: 25}} color={colorPrimary} underline="none" href={'https://api.whatsapp.com/send?phone=5592981341809&text=Quero%20fazer%20parte%20do%20grupo%20de%20vendas'}>
                     {post.linkText}
                     </Link>
                 </Box>

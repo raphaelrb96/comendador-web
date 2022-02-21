@@ -9,10 +9,11 @@ import FotoList from "../../components/FotoList";
 import Header from "../../components/Header";
 import Pb from "../../components/Pb";
 import Quadro from "../../components/Quadro";
-import { getProdsIds, getServerProduto, obterProduto } from "../../services/Loja";
+import { addAoCarrinho, getProdsIds, getServerProduto, obterProduto } from "../../services/Loja";
 import Container from '@mui/material/Container';
 import { Box } from "@mui/system";
 import { colorPrimary } from "../../utilidades/Cores";
+import { viewItem } from "../../services/Analytics";
 
 const fetcher = async (...args) => {
     const res = await fetch(...args);
@@ -90,8 +91,15 @@ function DadosProd({title, main, infoMain, bt1, bt2, click1, click2}) {
     )
 }
 
-function DadosComissao({prod}) {
-    return <DadosProd title={'Comissão'} main={`R$${prod.comissao}`} infoMain={'Por unidade vendida'} bt1={'Aumentar'} bt2={'Diminuir'} />;
+function DadosComissao({setComissioes, comissaoUnidade}) {
+    const click1 = () => {
+        setComissioes(true);
+    };
+    const click2 = () => {
+        setComissioes(false);
+    };
+    
+    return <DadosProd title={'Comissão'} main={`R$${comissaoUnidade}`} infoMain={'Por unidade vendida'} bt1={'Aumentar'} click1={click1} click2={click2} bt2={'Diminuir'} />;
 }
 
 function DadosQuantidade({setQuantidade, quantidade}) {
@@ -104,12 +112,12 @@ function DadosQuantidade({setQuantidade, quantidade}) {
     return <DadosProd title={'Quantidade'} main={quantidade} infoMain={'Itens pra venda'} bt1={'Aumentar'} bt2={'Diminuir'} click1={click1} click2={click2} />;
 }
 
-function DadosConclusao({item}) {
-    let {valorTotalComComissao} = item;
-    return <DadosProd title={'Total'} main={`R$ ${valorTotalComComissao},00`} infoMain={'Valor a pagar'} bt1={'Adicionar ao Carrinho'} />;
+function DadosConclusao({item, concluir}) {
+    let {valorTotalComComissao, comissaoTotal} = item;
+    return <DadosProd title={'Total'} main={`R$ ${valorTotalComComissao},00`} infoMain={`R$ ${comissaoTotal},00 de Lucro`} bt1={'Adicionar ao Carrinho'} click1={concluir} />;
 }
 
-function Content({componentImg, prod, item, setQuantidade}) {
+function Content({componentImg, prod, item, setQuantidade, setComissioes, concluir}) {
     const {quantidade, valorTotal, valorTotalComComissao, comissaoTotal, valorUni, valorUniComComissao, comissaoUnidade} = item;
     return(
         <>
@@ -147,9 +155,9 @@ function Content({componentImg, prod, item, setQuantidade}) {
                 <br/>
                 <br/>
                 <Grid container spacing={3} alignItems="center" justifyContent="center" justifyItems="center">
-                    <DadosComissao prod={prod} item={item} />
+                    <DadosComissao comissaoUnidade={comissaoUnidade} setComissioes={setComissioes} />
                     <DadosQuantidade prod={prod} item={item} setQuantidade={setQuantidade} quantidade={quantidade} />
-                    <DadosConclusao item={item} />
+                    <DadosConclusao item={item} concluir={concluir} />
                 </Grid>
             </Container>
 
@@ -215,15 +223,45 @@ const produtos = () => {
         
     }
 
-    const setComissioes = (c, v, q) => {
-        setItem((prevState) => ({
-            ...prevState,
-            comissaoUnidade: c,
-            valorUniComComissao: v
-        }));
+    const setComissioes = (aumentar) => {
+
+        if(aumentar) {
+                let c = comissaoUnidade + 1;
+                let vc = (valorUni - prod.comissao) + c;
+                let ct = c * quantidade;
+                let vtc = vc * quantidade;
+
+                setItem((prevState) => ({
+                    ...prevState,
+                    comissaoUnidade: c,
+                    valorUniComComissao: vc,
+                    comissaoTotal: ct,
+                    valorTotalComComissao: vtc
+                }));
+        } else {
+            if(comissaoUnidade > prod.comissao) {
+                let c = comissaoUnidade - 1;
+                let vc = (valorUni - prod.comissao) + c;
+                let ct = c * quantidade;
+                let vtc = vc * quantidade;
+
+                setItem((prevState) => ({
+                    ...prevState,
+                    comissaoUnidade: c,
+                    valorUniComComissao: vc,
+                    comissaoTotal: ct,
+                    valorTotalComComissao: vtc
+                }));
+            }
+        }
+
+        
     };
 
-    
+    const clickConcluir = () => {
+        addAoCarrinho(item);
+        route.push('/carrinho');
+    };
     
     const getProduto = () => {
         if(id === null || id === undefined) {
@@ -248,6 +286,7 @@ const produtos = () => {
                 comissaoUnidade: mProduto.comissao,
                 comissaoTotal: mProduto.comissao
             };
+            viewItem(mProduto);
             setProd(d);
             setItem(docm);
         });
@@ -262,7 +301,7 @@ const produtos = () => {
 
     if(prod !== null && prod !== undefined) {
         componentImg = <img src={prod.imgCapa} style={{width: '100%'}} />;
-        container = <Content componentImg={componentImg} item={item} setQuantidade={setQuantidade} prod={prod} />
+        container = <Content componentImg={componentImg} item={item} setQuantidade={setQuantidade} setComissioes={setComissioes} prod={prod} concluir={clickConcluir} />
 
         containerFotos = (
             <FotoList imagens={prod.imagens}/>

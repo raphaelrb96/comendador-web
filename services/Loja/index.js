@@ -1,7 +1,10 @@
 import firebase, { firestore } from 'firebase/app';
+import { adicionado } from '../Analytics';
 
 
 const db = firebase.firestore();
+
+const refListaRevenda = db.collection('listaRevendas').doc('usuario');
 
 
 export async function listarProdutos (listener, categoria) {
@@ -105,4 +108,96 @@ export async function getProdsIds () {
         return ids;
     }
     
+}
+
+export function addAoCarrinho(item) {
+    const user = firebase.auth().currentUser;
+    refListaRevenda.collection(user.uid).doc(item.idProdut).set(item);
+    adicionado(item);
+}
+
+export function getCarrinho(listener) {
+    const user = firebase.auth().currentUser;
+    refListaRevenda.collection(user.uid).onSnapshot(querySnapshot => {
+        let itens = [];
+
+        if(querySnapshot.size > 0) {
+            querySnapshot.forEach(doc => {
+                let obj = doc.data();
+                itens.push(obj);
+            });
+        }
+
+        listener(itens);
+    });
+    
+}
+
+export function getItensCarrinho(listener) {
+    const user = firebase.auth().currentUser;
+    refListaRevenda.collection(user.uid).get().then(querySnapshot => {
+        let itens = [];
+
+        if(querySnapshot.size > 0) {
+            querySnapshot.forEach(doc => {
+                let obj = doc.data();
+                itens.push(obj);
+            });
+        }
+
+        listener(itens);
+    });
+}
+
+export function removeDoCarrinho(id) {
+    const user = firebase.auth().currentUser;
+    refListaRevenda.collection(user.uid).doc(id).delete();
+}
+
+export function criarIdVenda() {
+    let refVenda = db.collection('Revendas').doc();
+    let vendaId = refVenda.id;
+    return vendaId;
+}
+
+export function registrarVenda(venda, listener) {
+    let batch = db.batch();
+    const user = firebase.auth().currentUser;
+    venda.listaDeProdutos.map(item => {
+        let id = item.idProdut;
+        const user = firebase.auth().currentUser;
+        let refCart = refListaRevenda.collection(user.uid).doc(id);
+        batch.delete(refCart);
+    });
+
+    let refCompra = db.collection('Revendas').doc(venda.idCompra);
+    let refMinhaCompra = db.collection('MinhasRevendas').doc('Usuario').collection(user.uid).doc(venda.idCompra);
+
+    batch.set(refCompra, venda);
+    batch.set(refMinhaCompra, venda);
+
+    batch.commit().then(() => listener(true)).catch(error => listener(false));
+
+}
+
+export function vendasPorUsuario(listener) {
+    const user = firebase.auth().currentUser;
+    let refMinhasVendas = db.collection('MinhasRevendas').doc('Usuario').collection(user.uid);
+    let d = new Date();
+    d.setHours(d.getHours() - 730);
+    console.log(d.getTime());
+    refMinhasVendas.where('hora', '>=', d.getTime()).orderBy("hora", "desc").onSnapshot(snap => {
+        let lista = [];
+
+        if(snap != null && snap.size > 0) {
+            
+            snap.forEach(doc => {
+                let objItem = doc.data();
+                lista.push(objItem);
+            });
+            
+        }
+
+        return listener(lista);
+    });
 }

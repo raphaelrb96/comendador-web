@@ -1,11 +1,11 @@
 import { Grid } from "@mui/material";
 import Produto from "./Produto";
 
-const gridSpacing = 3;
+const gridSpacing = 2;
 
 const GridProdutos = ({lista}) => {
     return (
-        <Grid container sx={{paddingLeft: {sm: 1}, paddingRight: {sm: 1}}} justifyContent="center" spacing={gridSpacing}>
+        <Grid container sx={{paddingLeft: {sm: 10}, paddingRight: {sm: 10}, marginTop: 2}} justifyContent="center" spacing={gridSpacing}>
             {lista.map(doc => {
                 let dados = doc;
                 let {prodName, prodValor, comissao, imgCapa, idProduto} = dados;

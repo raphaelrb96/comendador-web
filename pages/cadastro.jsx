@@ -1,25 +1,34 @@
 import { Alert, AlertTitle, Avatar, Box, Button, Checkbox, CssBaseline, FormControlLabel, Grid, Icon, Link, Paper, TextField, Typography } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
 import { colorPrimary } from "../utilidades/Cores";
-import { getUser, logarUsuario } from "../services/Usuario";
-import { useState } from "react";
+import { authListener, cadastrarUsuario, getUser, logarUsuario } from "../services/Usuario";
+import { Fragment, useEffect, useState } from "react";
 import Pb from "../components/Pb";
 import { useRouter } from "next/router";
-const login = () => {
 
+const cadastro = () => {
+    
     const [pb, setPb] = useState(false);
     const [alerta, setAlerta] = useState(null);
-
+    
     const route = useRouter();
-    if(getUser()) {
-        route.push('/');
-    }
+
+    
+
+    useEffect(() => {
+        authListener(u => {
+            if(u !== null) {
+                route.push('/');
+            }
+        })
+      }, []);
 
     const handleSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
         const email = data.get('email');
         const senha = data.get('password');
+        const nome = data.get('name');
         if(senha.length < 6) {
             setAlerta({
                 title: 'Senha incompleta',
@@ -29,8 +38,8 @@ const login = () => {
             console.log('erro');
             return;
         }
-
-        logarUsuario(email, senha, (entrar) => {
+        setPb(true);
+        cadastrarUsuario(email, senha, nome, (entrar) => {
             if(entrar.sucess) {
                 console.log('sucesso');
                 route.push('/');
@@ -40,19 +49,25 @@ const login = () => {
                     case 'auth/invalid-email':
                         setAlerta({
                             title: 'Email invalido',
-                            mensagem: 'Insira um email valido e tente novamente'
+                            mensagem: "O endereço de e-mail está mal formatado."
                         });
                         break;
-                    case 'auth/user-not-found':
+                    case 'auth/email-already-in-use':
                         setAlerta({
-                            title: 'Conta não existe',
-                            mensagem: 'Nenhuma conta existente vinculada a esse email'
+                            title: 'Conta ja existe',
+                            mensagem: 'O endereço de e-mail já está sendo usado por outra conta.'
                         });
                         break;
-                    case 'auth/wrong-password':
+                    case 'auth/weak-password':
                         setAlerta({
                             title: 'Senha invalida',
-                            mensagem: 'Senha errada. Tente novamente'
+                            mensagem: 'Senha Fraca. Tente uma senha mais segura'
+                        });
+                        break;
+                    default:
+                        setAlerta({
+                            title: 'Erro',
+                            mensagem: 'Erro ao cadastrar'
                         });
                         break;
                 }
@@ -76,7 +91,7 @@ const login = () => {
 
     return (
         <div>
-        <Grid container component="main" sx={{ height: '100vh' }}>
+            <Grid container component="main" sx={{ height: '100vh' }}>
             <CssBaseline />
             <Grid
             item
@@ -92,7 +107,6 @@ const login = () => {
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
             }}/>
-                
             <Grid item xs={12} sm={12} md={6} lg={5} component={Paper} elevation={6} square>
             <Box
                 sx={{
@@ -103,13 +117,14 @@ const login = () => {
                 alignItems: 'center',
                 }}
             >
-                <Avatar style={{width: 180, height: 180}} sx={{  bgcolor: 'secondary.main' }}>
+                <Avatar style={{width: 120, height: 120}} sx={{  bgcolor: 'secondary.main' }}>
                     <img src="/comendador.png" style={{width: 180}} />
                 </Avatar>
                 <Typography component="h1" variant="h5">
-                    Entrar
+                    Cadastro
                 </Typography>
-                <Box component="form" noValidate method="post" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+                {componentExtra}
+                <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
                     <TextField
                         margin="normal"
                         required
@@ -124,44 +139,60 @@ const login = () => {
                         margin="normal"
                         required
                         fullWidth
+                        id="name"
+                        label="Nome"
+                        name="name"
+                        autoComplete="name"
+                        autoFocus
+                    />
+                    <TextField
+                        margin="normal"
+                        required
+                        fullWidth
                         name="password"
                         label="Senha"
                         type="password"
                         id="password"
                         autoComplete="current-password"
                     />
+                    <TextField
+                        margin="normal"
+                        required
+                        fullWidth
+                        name="password"
+                        label="Confirmar senha"
+                        type="password"
+                        id="password-confirm"
+                        autoComplete="current-password"
+                    />
                     <FormControlLabel
                         control={<Checkbox value="remember" color="primary" />}
-                        label="Salvar login"
+                        label="Confirmo que esse E-mail é meu principal"
                     />
                     <Button
                         type="submit"
                         fullWidth
                         style={{background: colorPrimary}}
                         variant="contained"
-                        sx={{ mt: 3, mb: 2 }}>
-                            Entrar
+                        sx={{ mt: 3, mb: 2 }}
+                    >
+                        Cadastrar
                     </Button>
                     <Grid container>
                         <Grid item xs>
-                            <Link href="#" variant="body2">
-                                Esqueceu sua senha ?
+                            <Link href="/login" variant="body2">
+                                Ja tenho uma conta
                             </Link>
                         </Grid>
-                        <Grid item>
-                            <Link href="/cadastro" variant="body2">
-                                {"Cria sua conta agora"}
-                            </Link>
-                        </Grid>
+                        
                     </Grid>
                 </Box>
-                {componentExtra}
+                <Box style={{height: 100}} />
             </Box>
-            
             </Grid>
         </Grid>
         </div>
     )
 }
 
-export default login;
+export default cadastro

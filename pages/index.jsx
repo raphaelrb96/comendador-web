@@ -10,7 +10,10 @@ import GridProdutos from '../components/GridProdutos'
 import Header from '../components/Header'
 import Pb from '../components/Pb'
 import Capa from '../components/Capa'
+import Intro from '../components/Intro'
 import Informacoes from '../components/Informacoes'
+import { authListener } from '../services/Usuario';
+import { useRouter } from 'next/router';
 
 
 export const gridSpacing = 3;
@@ -62,9 +65,12 @@ function autenticar () {
   }
 }
 
+
 export default function Home() {
   
+  const route = useRouter();
   const [produtos, setProdutos] = useState(null);
+  const [mUser, setmUser] = useState(undefined);
 
     useEffect(() => {
         listarProdutos(lista => {
@@ -72,7 +78,24 @@ export default function Home() {
         })
     }, []);
 
+    useEffect(() => {
+      authListener(u => {
+        setmUser(u);
+      })
+    }, []);
+
+
     let containerProdutos = null;
+
+    if(mUser === undefined) {
+      return <Intro />
+    } else if(mUser === null) {
+      setInterval(() => {
+        route.push('/login');
+      }, 3000);
+      
+      return <Intro />;
+    }
 
     if(produtos === null) {
         containerProdutos = <Pb/>
