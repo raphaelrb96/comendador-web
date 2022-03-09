@@ -3,6 +3,7 @@ import "firebase/auth"
 import "firebase/firestore"
 import "firebase/storage"
 import "firebase/analytics"
+import { metaPixel } from '../../pages/_app';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -19,11 +20,21 @@ const firebaseConfig = {
   measurementId: "G-K2SQWJZYHZ"
 };
 
+const advancedMatching = {}; // optional, more info: https://developers.facebook.com/docs/facebook-pixel/advanced/advanced-matching
+const options = {
+  autoConfig: true, // set pixel's autoConfig. More info: https://developers.facebook.com/docs/facebook-pixel/advanced/
+  debug: false, // enable logs
+};
+
+
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig)
 }
 
 export const getAnalytics = () => {
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig)
+    }
     if (typeof window !== "undefined") {
       return firebase.analytics()
     } else {
@@ -31,10 +42,27 @@ export const getAnalytics = () => {
     }
 }
 
+async function getPixel () {
+    if (typeof window !== "undefined") {
+      await import('react-facebook-pixel')
+        .then((x) => x.default)
+        .then((ReactPixel) => {
+            return ReactPixel;
+        });
+    } else {
+      return null
+    }
+}
+
+const pixel = getPixel();
+
 const analytics = getAnalytics();
+
+
 
 export function novaCompra(venda) {
     if(analytics === null) return;
+    if(pixel === null) return;
     let itens = Array();
     venda.listaDeProdutos.map((item,index) => {
 
@@ -66,10 +94,27 @@ export function novaCompra(venda) {
         tax: 0,
         items: itens
     });
+
+    import('react-facebook-pixel')
+        .then((x) => x.default)
+        .then((ReactPixel) => {
+            ReactPixel.track('Purchase', {
+                content_ids: venda.idCompra,
+                content_name: venda.idCompra,
+                content_type: 'product',
+                contents: itens,
+                currency: 'BRL',
+                num_items: itens.length,
+                value: venda.valorTotal,
+            });
+        });
+
+    
 }
 
 export function adicionado(item) {
     if(analytics === null) return;
+    if(pixel === null) return;
     const {idProdut, produtoName, valorUniComComissao, caminhoImg, quantidade, valorTotalComComissao} = item;
     analytics.logEvent('add_to_cart', {
         items: [{
@@ -84,10 +129,33 @@ export function adicionado(item) {
         value: valorTotalComComissao,
         currency: 'BRL'
     });
+
+    import('react-facebook-pixel')
+        .then((x) => x.default)
+        .then((ReactPixel) => {
+            ReactPixel.track('AddToCart', {
+                content_ids: idProdut,
+                content_name: produtoName,
+                content_type: 'product',
+                contents: [{
+                    price: valorUniComComissao,
+                    name: produtoName,
+                    id: idProdut,
+                    creative_slot: caminhoImg,
+                    creative_name: caminhoImg,
+                    currency: 'BRL',
+                    quantity: quantidade
+                }],
+                currency: 'BRL',
+                value: valorTotalComComissao,
+            });
+        });
+    
 }
 
 export function viewItem(produto) {
     if(analytics === null) return;
+    if(pixel === null) return;
     const {idProduto, prodName, prodValor, imgCapa, quantidade} = produto;
     analytics.logEvent('view_item', {
         items: [{
@@ -102,4 +170,49 @@ export function viewItem(produto) {
         value: prodValor,
         currency: 'BRL'
     });
+    import('react-facebook-pixel')
+        .then((x) => x.default)
+        .then((ReactPixel) => {
+            ReactPixel.track('ViewContent', {
+                content_ids: idProduto,
+                content_name: prodName,
+                content_type: 'product',
+                contents: [{
+                    price: prodValor,
+                    name: prodName,
+                    id: idProduto,
+                    creative_slot: imgCapa,
+                    creative_name: imgCapa,
+                    currency: 'BRL',
+                    quantity: quantidade
+                }],
+                currency: 'BRL',
+                value: prodValor,
+            });
+        });
+    
+}
+
+export function landingView() {
+    const analytics = getAnalytics();
+    if(analytics === null) return;
+    if(pixel === null) return;
+    analytics.logEvent('landing_view');
+    import('react-facebook-pixel')
+        .then((x) => x.default)
+        .then((ReactPixel) => {
+            ReactPixel.init('264269985740413');
+            ReactPixel.trackCustom('LandingView');
+        });
+}
+
+export function abrirGrupo() {
+    if(analytics === null) return;
+    if(pixel === null) return;
+    analytics.logEvent('join_group');
+    import('react-facebook-pixel')
+        .then((x) => x.default)
+        .then((ReactPixel) => {
+            ReactPixel.track('SubmitApplication');
+        });
 }

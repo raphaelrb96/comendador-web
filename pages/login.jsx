@@ -1,8 +1,8 @@
 import { Alert, AlertTitle, Avatar, Box, Button, Checkbox, CssBaseline, FormControlLabel, Grid, Icon, Link, Paper, TextField, Typography } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
 import { colorPrimary } from "../utilidades/Cores";
-import { getUser, logarUsuario } from "../services/Usuario";
-import { useState } from "react";
+import { authListener, getUser, logarUsuario } from "../services/Usuario";
+import { useEffect, useState } from "react";
 import Pb from "../components/Pb";
 import { useRouter } from "next/router";
 const login = () => {
@@ -11,9 +11,14 @@ const login = () => {
     const [alerta, setAlerta] = useState(null);
 
     const route = useRouter();
-    if(getUser()) {
-        route.push('/');
-    }
+    
+    useEffect(() => {
+        authListener(u => {
+            if(u !== null) {
+                route.push('/');
+            }
+        })
+    }, []);
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -29,13 +34,14 @@ const login = () => {
             console.log('erro');
             return;
         }
-
+        setPb(true);
         logarUsuario(email, senha, (entrar) => {
             if(entrar.sucess) {
                 console.log('sucesso');
                 route.push('/');
             } else {
                 console.log(entrar);
+                setPb(false);
                 switch(entrar.errorCode) {
                     case 'auth/invalid-email':
                         setAlerta({
@@ -53,6 +59,12 @@ const login = () => {
                         setAlerta({
                             title: 'Senha invalida',
                             mensagem: 'Senha errada. Tente novamente'
+                        });
+                        break;
+                    default:
+                        setAlerta({
+                            title: 'Erro inesperado',
+                            mensagem: 'Tente novamente mais tarde'
                         });
                         break;
                 }
@@ -109,6 +121,7 @@ const login = () => {
                 <Typography component="h1" variant="h5">
                     Entrar
                 </Typography>
+                {componentExtra}
                 <Box component="form" noValidate method="post" onSubmit={handleSubmit} sx={{ mt: 1 }}>
                     <TextField
                         margin="normal"
@@ -155,7 +168,7 @@ const login = () => {
                         </Grid>
                     </Grid>
                 </Box>
-                {componentExtra}
+                
             </Box>
             
             </Grid>

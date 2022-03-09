@@ -1,5 +1,7 @@
 import firebase, { firestore } from 'firebase/app';
 
+const db = firebase.firestore();
+
 export function getUser() {
     const user = firebase.auth().currentUser;
     return user;
@@ -14,14 +16,40 @@ export function cadastrarUsuario(email, password, nome, listener) {
 
         user.updateProfile({displayName: nome}).then(() => {
 
-            let entrar = {
-                sucess: true,
-                user,
-                errorCode: 0,
-                errorMessage: ''
+            let usuarioNovo = {
+                nome: nome,
+                email: email,
+                celular: '',
+                controleDeVersao: 1,
+                pathFoto: '',
+                uid: user.uid,
+                tipoDeUsuario: 1,
+                provedor: 'Email',
+                ultimoLogin: Date.now(),
+                primeiroLogin: Date.now(),
             };
 
-            return listener(entrar);
+            const userRef = db.collection("Usuario").doc(user.uid);
+
+            userRef.set(usuarioNovo).then(() => {
+                let entrar = {
+                    sucess: true,
+                    user,
+                    errorCode: 0,
+                    errorMessage: ''
+                };
+                return listener(entrar);
+
+            }).catch(er => {
+                let entrar = {
+                    sucess: false,
+                    user: null,
+                    errorCode: 5,
+                    errorMessage: ''
+                };
+                return listener(entrar);
+            });
+
 
         }).catch(e => {
             let errorCode = e.code;
@@ -30,8 +58,8 @@ export function cadastrarUsuario(email, password, nome, listener) {
             let entrar = {
                 sucess: false,
                 user: null,
-                errorCode: errorCode,
-                errorMessage: errorMessage
+                errorCode: 5,
+                errorMessage: ''
             };
             return listener(entrar);
         });
@@ -52,7 +80,7 @@ export function cadastrarUsuario(email, password, nome, listener) {
     });
 }
 
-export function logarUsuario(email, password, listener) {
+export async function logarUsuario(email, password, listener) {
     firebase.auth().signInWithEmailAndPassword(email, password)
     .then((userCredential) => {
         // Signed in
@@ -65,7 +93,68 @@ export function logarUsuario(email, password, listener) {
             errorMessage: ''
         };
 
-        return listener(entrar);
+        const userRef = db.collection("Usuario").doc(user.uid);
+
+        
+        userRef.get().then((userData) => {
+
+
+            let objUser = null;
+            console.log(userData);
+
+            if(userData.exists) {
+
+                objUser = {
+                    ultimoLogin: Date.now()
+                };
+
+            } else {
+                objUser = {
+                    nome: user.displayName,
+                    email: email,
+                    celular: '',
+                    controleDeVersao: 1,
+                    pathFoto: '',
+                    uid: user.uid,
+                    tipoDeUsuario: 1,
+                    provedor: 'Email',
+                    ultimoLogin: Date.now(),
+                    primeiroLogin: Date.now(),
+                };
+
+            }
+
+            userRef.set(objUser).then(() => {
+                let entrar = {
+                    sucess: true,
+                    user,
+                    errorCode: 0,
+                    errorMessage: ''
+                };
+                return listener(entrar);
+
+            }).catch(er => {
+                let entrar = {
+                    sucess: false,
+                    user: null,
+                    errorCode: 5,
+                    errorMessage: ''
+                };
+                return listener(entrar);
+            });
+        }).catch(err => {
+            
+            let entrar = {
+                sucess: false,
+                user: null,
+                errorCode: 5,
+                errorMessage: err.message
+            };
+            return listener(entrar);
+        });
+
+        
+
     })
     .catch((error) => {
         var errorCode = error.code;

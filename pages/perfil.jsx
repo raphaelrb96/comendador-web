@@ -235,11 +235,11 @@ const perfil = () => {
                         alignItems: 'center',
                         display: 'flex'
                         }}>
-                            <ListItemButton onClick={() => {route.push(`https://api.whatsapp.com/send?phone=5592981341809&text=Gostaria%20de%20Receber%20meu%20pagamento%20no%20valor%20de%20${aReceber}%20reais`)}} >
+                            <ListItemButton>
                                 <ListItemIcon>
                                     <LocalAtmIcon />
                                 </ListItemIcon>
-                                <ListItemText primary="Solicitar" />
+                                <ListItemText primary="Solicite pelo WhatsApp" />
                             </ListItemButton>
                         </Box>
                         <br/>

@@ -21,7 +21,7 @@ const cadastro = () => {
                 route.push('/');
             }
         })
-      }, []);
+    }, []);
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -45,6 +45,7 @@ const cadastro = () => {
                 route.push('/');
             } else {
                 console.log(entrar);
+                setPb(false);
                 switch(entrar.errorCode) {
                     case 'auth/invalid-email':
                         setAlerta({
@@ -108,87 +109,87 @@ const cadastro = () => {
                 backgroundPosition: 'center',
             }}/>
             <Grid item xs={12} sm={12} md={6} lg={5} component={Paper} elevation={6} square>
-            <Box
-                sx={{
-                my: 1,
-                mx: 4,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                }}
-            >
-                <Avatar style={{width: 120, height: 120}} sx={{  bgcolor: 'secondary.main' }}>
-                    <img src="/comendador.png" style={{width: 180}} />
-                </Avatar>
-                <Typography component="h1" variant="h5">
-                    Cadastro
-                </Typography>
-                {componentExtra}
-                <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
-                    <TextField
-                        margin="normal"
-                        required
-                        fullWidth
-                        id="email"
-                        label="Email"
-                        name="email"
-                        autoComplete="email"
-                        autoFocus
-                    />
-                    <TextField
-                        margin="normal"
-                        required
-                        fullWidth
-                        id="name"
-                        label="Nome"
-                        name="name"
-                        autoComplete="name"
-                        autoFocus
-                    />
-                    <TextField
-                        margin="normal"
-                        required
-                        fullWidth
-                        name="password"
-                        label="Senha"
-                        type="password"
-                        id="password"
-                        autoComplete="current-password"
-                    />
-                    <TextField
-                        margin="normal"
-                        required
-                        fullWidth
-                        name="password"
-                        label="Confirmar senha"
-                        type="password"
-                        id="password-confirm"
-                        autoComplete="current-password"
-                    />
-                    <FormControlLabel
-                        control={<Checkbox value="remember" color="primary" />}
-                        label="Confirmo que esse E-mail é meu principal"
-                    />
-                    <Button
-                        type="submit"
-                        fullWidth
-                        style={{background: colorPrimary}}
-                        variant="contained"
-                        sx={{ mt: 3, mb: 2 }}
-                    >
-                        Cadastrar
-                    </Button>
-                    <Grid container>
-                        <Grid item xs>
-                            <Link href="/login" variant="body2">
-                                Ja tenho uma conta
-                            </Link>
+                <Box
+                    sx={{
+                    my: 1,
+                    mx: 4,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    }}
+                >
+                    <Avatar style={{width: 120, height: 120}} sx={{  bgcolor: 'secondary.main' }}>
+                        <img src="/comendador.png" style={{width: 180}} />
+                    </Avatar>
+                    <Typography component="h1" variant="h5">
+                        Cadastro
+                    </Typography>
+                    {componentExtra}
+                    <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
+                        <TextField
+                            margin="normal"
+                            required
+                            fullWidth
+                            id="email"
+                            label="Email"
+                            name="email"
+                            autoComplete="email"
+                            autoFocus
+                        />
+                        <TextField
+                            margin="normal"
+                            required
+                            fullWidth
+                            id="name"
+                            label="Nome"
+                            name="name"
+                            autoComplete="name"
+                            autoFocus
+                        />
+                        <TextField
+                            margin="normal"
+                            required
+                            fullWidth
+                            name="password"
+                            label="Senha"
+                            type="password"
+                            id="password"
+                            autoComplete="current-password"
+                        />
+                        <TextField
+                            margin="normal"
+                            required
+                            fullWidth
+                            name="password"
+                            label="Confirmar senha"
+                            type="password"
+                            id="password-confirm"
+                            autoComplete="current-password"
+                        />
+                        <FormControlLabel
+                            control={<Checkbox value="remember" color="primary" />}
+                            label="Confirmo que esse E-mail é meu principal"
+                        />
+                        <Button
+                            type="submit"
+                            fullWidth
+                            style={{background: colorPrimary}}
+                            variant="contained"
+                            sx={{ mt: 3, mb: 2 }}
+                        >
+                            Cadastrar
+                        </Button>
+                        <Grid container>
+                            <Grid item xs>
+                                <Link href="/login" variant="body2">
+                                    Ja tenho uma conta
+                                </Link>
+                            </Grid>
+                            
                         </Grid>
-                        
-                    </Grid>
+                    </Box>
+                    <Box style={{height: 100}} />
                 </Box>
-                <Box style={{height: 100}} />
-            </Box>
             </Grid>
         </Grid>
         </div>
