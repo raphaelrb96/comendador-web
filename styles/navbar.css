@@ -103,26 +103,55 @@ p {
   margin-bottom: 23px;
 }
 
+.txt-bt {
+  text-align: center;
+  margin-right: 20px;
+  margin-left: 20px;
+  font-size: 18px;
+  font-family: Roboto, sans-serif;
+  font-weight: 200;
+  color: rgba(113, 128, 148, 1);
+  word-wrap: break-word;
+  margin-bottom: 23px;
+}
+
 .button-download-your-free-theme {
   padding: 24px 55px 23px 59px;
   box-sizing: border-box;
-  border-radius: 7px;
+  border-radius: 36px;
   background-color: #9B15F4;
-  height: 73px;
+  height: 72px;
   width: fit-content;
   margin-top: 20px;
   margin-bottom: 30px;
 }
 
-.button-download-your-free-theme:hover {
-  padding: 24px 55px 23px 59px;
+.button-download-your-free-theme2 {
+  padding: 30px;
   box-sizing: border-box;
-  border-radius: 7px;
-  background-color: #580AA6;
-  height: 73px;
+  border-radius: 36px;
+  background-color: #34af23;
+  height: 72px;
   width: fit-content;
   margin-top: 20px;
   margin-bottom: 30px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.button-download-your-free-theme3 {
+  padding: 30px;
+  box-sizing: border-box;
+  border-radius: 36px;
+  background-color: #ffffff;
+  height: 72px;
+  width: fit-content;
+  margin-top: 30px;
+  margin-bottom: 30px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .txt-892 {
@@ -130,6 +159,14 @@ p {
   font-family: Roboto, sans-serif;
   font-weight: 700;
   color: rgba(255, 255, 255, 1);
+  word-wrap: break-word;
+}
+
+.txt-8922 {
+  font-size: 20px;
+  font-family: Roboto, sans-serif;
+  font-weight: 700;
+  color: #34af23;
   word-wrap: break-word;
 }
 
