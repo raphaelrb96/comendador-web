@@ -42,6 +42,7 @@ const cadastro = () => {
         cadastrarUsuario(email, senha, nome, (entrar) => {
             if(entrar.sucess) {
                 console.log('sucesso');
+                logLogin();
                 route.push('/');
             } else {
                 console.log(entrar);

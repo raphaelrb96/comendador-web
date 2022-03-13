@@ -5,6 +5,7 @@ import { authListener, getUser, logarUsuario } from "../services/Usuario";
 import { useEffect, useState } from "react";
 import Pb from "../components/Pb";
 import { useRouter } from "next/router";
+import { logLogin } from "../services/Analytics";
 const login = () => {
 
     const [pb, setPb] = useState(false);
@@ -37,6 +38,7 @@ const login = () => {
         setPb(true);
         logarUsuario(email, senha, (entrar) => {
             if(entrar.sucess) {
+                logLogin();
                 console.log('sucesso');
                 route.push('/');
             } else {

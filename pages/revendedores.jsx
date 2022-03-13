@@ -7,7 +7,9 @@ import Intro from "../components/Intro";
 import { Box } from "@mui/system";
 import { useState } from "react";
 import { useRouter } from "next/router";
-import { abrirGrupo, landingView } from "../services/Analytics";
+import { abrirGrupo, chamarPv, landingView } from "../services/Analytics";
+
+let text1 = 'SIM, você pode ganhar dinheiro na internet todos os dias, de qualquer lugar a qualquer hora';
 
 function CTA({entrar}) {
 
@@ -24,8 +26,9 @@ function CTA({entrar}) {
                 <Button onClick={() => {
                     setClick(true)
                     entrar()
-                }} className="button-download-your-free-theme">
-                    <Typography component="p" className="txt-695 flex-hcenter">{!click ? 'QUERO ENTRAR NO GRUPO' : 'ENCAMINHANDO'}</Typography>
+                }} className="button-download-your-free-theme2">
+                    <img src="/whats.png" style={{width: 55, marginRight: 6}} />
+                    <Typography component="p" className="txt-892 flex-hcenter">{!click ? 'ENTRAR NO GRUPO' : 'ENCAMINHANDO'}</Typography>
                 </Button>
             </Grid>
             <Typography component="p" className="text-cta flex-hcenter">
@@ -150,17 +153,23 @@ function Navbarhero({scroll, home}) {
             <img src="/comendador.png" style={{width: 180}} />
         </Avatar>
         
-        <Grid alignItems="center" className="flex-col-hcenter">
+        <Grid alignItems="center" sx={{paddingLeft: {md: 20}, paddingRight: {md: 20}}} alignContent="center" className="flex-col-hcenter">
           <div className="group-844 flex-row-vend">
             
           </div>
-          <Typography sx={{fontSize: { xs: 30, sm: 50 }}} className="txt-6102">SIM, você pode ganhar dinheiro na internet todos os dias, de qualquer lugar a qualquer hora</Typography>
-          <p className="txt-248">ATRAVES DE VENDAS ONLINE</p>
-          <p className="txt-848">
+          <Typography sx={{fontSize: { xs: 30, sm: 50 }}} className="txt-6102">
+            Estamos procurando pessoas para ganhar dinheiro trabalhando de casa
+          </Typography>
+          <p className="txt-248">COM VENDAS ONLINE</p>
+          <Typography component="p" className="txt-bt">
             Mesmo se não souber absolutamente nada sobre vendas online. Nossa equipe vai da todo suporte necessario para alcançar bons resultados.
-          </p>
-          <Button onClick={scroll} className="button-download-your-free-theme">
-            <p className="txt-892">COMEÇAR AGORA</p>
+          </Typography>
+          <Typography component="h6" className="txt-848">
+            Click no botão abaixo para conversar com um de nossos representantes no WhatsApp.
+          </Typography>
+          <Button onClick={scroll} className="button-download-your-free-theme2">
+            <img src="/whats.png" style={{width: 55, marginRight: 6}} />
+            <Typography component="p" className="txt-892">INICIAR CONVERSA</Typography>
           </Button>
         </Grid>
       </Grid>
@@ -321,6 +330,12 @@ const revendedores = () => {
         route.push(link);
     };
 
+    const chamarNoPv = () => {
+      chamarPv();
+      const linkPv = 'https://api.whatsapp.com/send?phone=5592988461303&text=Quero%20mais%20informa%C3%A7%C3%B5es%20sobre%20a%20vaga%20de%20vendedor%20online';
+      route.push(linkPv);
+    }
+
     useEffect(() => {
       landingView();
     }, []);
@@ -328,7 +343,7 @@ const revendedores = () => {
     return (
         <Grid alignContent={'center'} justifyContent="center" container>
             <Grid item>
-                <Navbarhero scroll={scrollToCTA} home={home} />
+                <Navbarhero scroll={chamarNoPv} home={home} />
             </Grid>
             
             <Grid item>

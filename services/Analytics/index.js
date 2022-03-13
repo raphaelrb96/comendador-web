@@ -61,6 +61,7 @@ const analytics = getAnalytics();
 
 
 export function novaCompra(venda) {
+    const analytics = getAnalytics();
     if(analytics === null) return;
     if(pixel === null) return;
     let itens = Array();
@@ -113,6 +114,7 @@ export function novaCompra(venda) {
 }
 
 export function adicionado(item) {
+    const analytics = getAnalytics();
     if(analytics === null) return;
     if(pixel === null) return;
     const {idProdut, produtoName, valorUniComComissao, caminhoImg, quantidade, valorTotalComComissao} = item;
@@ -154,6 +156,7 @@ export function adicionado(item) {
 }
 
 export function viewItem(produto) {
+    const analytics = getAnalytics();
     if(analytics === null) return;
     if(pixel === null) return;
     const {idProduto, prodName, prodValor, imgCapa, quantidade} = produto;
@@ -207,6 +210,7 @@ export function landingView() {
 }
 
 export function abrirGrupo() {
+    const analytics = getAnalytics();
     if(analytics === null) return;
     if(pixel === null) return;
     analytics.logEvent('join_group');
@@ -214,5 +218,29 @@ export function abrirGrupo() {
         .then((x) => x.default)
         .then((ReactPixel) => {
             ReactPixel.track('SubmitApplication');
+        });
+}
+
+export function chamarPv() {
+    const analytics = getAnalytics();
+    if(analytics === null) return;
+    if(pixel === null) return;
+    analytics.logEvent('sign_up');
+    import('react-facebook-pixel')
+        .then((x) => x.default)
+        .then((ReactPixel) => {
+            ReactPixel.track('Contact');
+        });
+}
+
+export function logLogin() {
+    const analytics = getAnalytics();
+    if(analytics === null) return;
+    if(pixel === null) return;
+    analytics.logEvent('login');
+    import('react-facebook-pixel')
+        .then((x) => x.default)
+        .then((ReactPixel) => {
+            ReactPixel.track('Lead');
         });
 }
